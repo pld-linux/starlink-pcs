@@ -5,8 +5,7 @@ Version:	4.1_1.218
 Release:	1
 License:	non-commercial use and distribution (see PCS_CONDITIONS)
 Group:		Libraries
-#Source0:	ftp://ftp.starlink.rl.ac.uk/pub/ussc/store/pcs/pcs.tar.Z
-Source0:	pcs.tar.Z
+Source0:	ftp://ftp.starlink.rl.ac.uk/pub/ussc/store/pcs/pcs.tar.Z
 # Source0-md5:	7a3710a40b158bc06e3e9f6895c68edf
 Patch0:		%{name}-make.patch
 URL:		http://www.starlink.rl.ac.uk/static_www/soft_further_PCS.html
