@@ -1,0 +1,79 @@
+--- dts_setsig.c~	2004-05-27 20:13:56.000000000 +0000
++++ dts_setsig.c	2004-05-27 20:16:59.000000000 +0000
+@@ -55,7 +55,7 @@
+  * option (on a program unit basis) or by runtime call(s) to the routine
+  * for_set_fpe_flags()
+  */
+-#ifdef __alpha
++#if defined(__alpha) && ! defined(__linux__)
+ #include <for_fpe_flags.h>
+ #endif
+ 
+@@ -77,7 +77,7 @@
+ #ifndef SA_SIGINFO
+ dtask_sighdlr(int isig);
+ #else
+-#ifndef __alpha
++#if ! defined(__alpha) || defined(__linux__)
+ dtask_sighdlr(int isig, struct siginfo *info, void *dummy);
+ #else
+ dtask_sighdlr(int isig, int sigcode, struct sigcontext *scp);
+@@ -89,7 +89,7 @@
+ process_signal(int signo, struct sigaction oact)
+ {
+     struct siglist *entry, *new_entry;
+-#ifdef __alpha
++#if defined(__alpha) && ! defined(__linux__)
+     void (*hanfun) (int,int,struct sigcontext *); 
+ #else
+     void (*hanfun);
+@@ -122,7 +122,7 @@
+ /* Retarget the signal handler towards dtask_sighdlr - leave all flags etc
+  * as they were
+  */
+-#ifdef __alpha
++#if defined(__alpha) && ! defined(__linux__)
+     oact.sa_handler = dtask_sighdlr;
+ #else
+     oact.sa_handler = (void *) dtask_sighdlr;
+@@ -234,7 +234,7 @@
+ #ifndef SA_SIGINFO
+ dtask_sighdlr(int isig)
+ #else
+-#ifndef __alpha
++#if ! defined(__alpha) || defined(__linux__)
+ dtask_sighdlr(int isig, struct siginfo *info, void *dummy)
+ #else
+ dtask_sighdlr(int isig, int sigcode, struct sigcontext *scp)
+@@ -244,11 +244,11 @@
+     int i, pid, child_status;
+     struct siglist *entry, *cur_entry = NULL;
+     sigset_t set, curset;
+-#ifdef __alpha
++#if defined(__alpha) && ! defined(__linux__)
+     void (*hanfun) (int,int,struct sigcontext *); 
+ #endif
+ 
+-#ifdef __alpha
++#if defined(__alpha) && ! defined(__linux__)
+ /*
+  * DEC Fortran under OSF1 uses SIGFPE to call trap code which produces
+  * the IEEE behaviour specified by for_set_fpe() or the -fpe compiler options.
+@@ -328,7 +328,7 @@
+ #ifndef SA_SIGINFO
+ 		    cur_entry->act.sa_handler(isig);
+ #else
+-#ifndef __alpha
++#if ! defined(__alpha) || defined(__linux__)
+ 		    cur_entry->act.sa_sigaction(isig, info, dummy);
+ #else
+                     hanfun = cur_entry->act.sa_handler;
+@@ -356,7 +356,7 @@
+  * It is called from DTASK_DTASK()
+  *
+  */
+-#ifdef __alpha
++#if defined(__alpha) && ! defined(__linux__)
+     sigset_t newmask=0, curmask;
+ 
+     if( sigprocmask(SIG_SETMASK, &newmask, &curmask) != 0 ) {
