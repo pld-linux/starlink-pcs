@@ -2,12 +2,13 @@ Summary:	PCS - Parameter and Communications Subsystems
 Summary(pl):	PCS - podsystemy parametrów i komunikacji
 Name:		starlink-pcs
 Version:	4.1_1.218
-Release:	1
+Release:	2
 License:	non-commercial use and distribution (see PCS_CONDITIONS)
 Group:		Libraries
 Source0:	ftp://ftp.starlink.rl.ac.uk/pub/ussc/store/pcs/pcs.tar.Z
 # Source0-md5:	7a3710a40b158bc06e3e9f6895c68edf
 Patch0:		%{name}-make.patch
+Patch1:		%{name}-alpha.patch
 URL:		http://www.starlink.rl.ac.uk/static_www/soft_further_PCS.html
 BuildRequires:	gcc-g77
 BuildRequires:	ncurses-devel
@@ -71,7 +72,14 @@ Statyczne biblioteki Starlink PCS.
 
 %prep
 %setup -q -c
-%patch -p1
+%patch0 -p1
+cd dtask
+mkdir tmp
+cd tmp
+tar xf ../dtask_source.tar
+%patch1 -p0
+tar cf ../dtask_source.tar *
+cd ../..
 
 %build
 PATH="$PATH:%{stardir}/bin" \
