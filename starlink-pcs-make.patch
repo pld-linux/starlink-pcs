@@ -1,0 +1,633 @@
+diff -Nur starlink-pcs-4.1_1.218.orig/adam/makefile starlink-pcs-4.1_1.218/adam/makefile
+--- starlink-pcs-4.1_1.218.orig/adam/makefile	2001-08-17 11:59:04.000000000 +0200
++++ starlink-pcs-4.1_1.218/adam/makefile	2003-11-02 02:38:44.413853984 +0100
+@@ -338,6 +338,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -623,7 +624,7 @@
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+ 	$(BLD_SHR) $@ '$(OBJECT_FILES)' \
+-           '-L$(INSTALL_LIB) -L$(STAR_LIB) -lmessys -lems -lstring -lchr -lpsx'
++           '-L$(INSTALL_SHARE) -L$(STAR_SHARE) -L../messys -lmessys -lems -L../string -lstring_adam -lchr -lpsx'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+@@ -1104,7 +1105,7 @@
+ #
+ #  Build the test program, ensuring that the installed version of the library
+ #  and link files are used.
+-	$(FC) $(FFLAGS) $(PKG_NAME)_test.f -L$(INSTALL_LIB) -L$(STAR_LIB) \
++	$(FC) $(FFLAGS) $(PKG_NAME)_test.f -L$(INSTALL_SHARE) -L$(STAR_SHARE) \
+               `$(INSTALL_BIN)/$(PKG_NAME)_link` -o $(PKG_NAME)_test
+ #
+ #  Remove the test program source and the include file links used to
+diff -Nur starlink-pcs-4.1_1.218.orig/adam/mk starlink-pcs-4.1_1.218/adam/mk
+--- starlink-pcs-4.1_1.218.orig/adam/mk	2000-01-18 18:10:41.000000000 +0100
++++ starlink-pcs-4.1_1.218/adam/mk	2003-11-02 02:27:24.924152120 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/adamnet/makefile starlink-pcs-4.1_1.218/adamnet/makefile
+--- starlink-pcs-4.1_1.218.orig/adamnet/makefile	1999-04-14 13:56:36.000000000 +0200
++++ starlink-pcs-4.1_1.218/adamnet/makefile	2003-11-02 02:32:40.165228192 +0100
+@@ -1192,7 +1192,7 @@
+ 
+ 
+ adamnet: adamnet.c ant.o sae_par.h ant.h
+-	$(CC) $(CFLAGS) -o adamnet adamnet.c ant.o -L$(INSTALL_LIB) \
++	$(CC) $(CFLAGS) -o adamnet adamnet.c ant.o -L$(INSTALL_SHARE) \
+         `msp_link` $(LDFLAGS)
+ 
+ ant.o: $(PRIVATE_INCLUDES) $(EXTERNAL_INCLUDES)
+diff -Nur starlink-pcs-4.1_1.218.orig/adamnet/mk starlink-pcs-4.1_1.218/adamnet/mk
+--- starlink-pcs-4.1_1.218.orig/adamnet/mk	2000-01-18 18:11:36.000000000 +0100
++++ starlink-pcs-4.1_1.218/adamnet/mk	2003-11-02 02:29:41.228430720 +0100
+@@ -334,9 +334,9 @@
+             ix86_Linux)
+                AR_IN='ar r'
+ 	       CC='gcc'
+-               CFLAGS='-O -fPIC'
++               CFLAGS='$(OPT) -fPIC'
+                FC='fort77'
+-	       FFLAGS='-fno-second-underscore -O -fPIC'
++	       FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                TAR_IN='tar -cvhf'
+diff -Nur starlink-pcs-4.1_1.218.orig/ams/makefile starlink-pcs-4.1_1.218/ams/makefile
+--- starlink-pcs-4.1_1.218.orig/ams/makefile	2000-01-18 17:33:50.000000000 +0100
++++ starlink-pcs-4.1_1.218/ams/makefile	2003-11-02 02:40:50.337710648 +0100
+@@ -345,6 +345,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE= $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -633,7 +634,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lems -lcnf -L../atimer -latimer -L../msp -lmsp'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+@@ -1109,10 +1110,10 @@
+ #
+ #  Build the test program, ensuring that the installed version of the library
+ #  and link files are used.
+-	$(CC) $(CFLAGS) amsmaster.c -I$(INSTALL_INC) -L$(INSTALL_LIB) \
+-        -L$(STAR_LIB) `$(INSTALL_BIN)/ams_link_adam` $(LDFLAGS) -o amsmaster
+-	$(CC) $(CFLAGS) amsslave.c -I$(INSTALL_INC) -L$(INSTALL_LIB) \
+-        -L$(STAR_LIB) `$(INSTALL_BIN)/ams_link_adam` $(LDFLAGS) -o amsslave
++	$(CC) $(CFLAGS) amsmaster.c -I$(INSTALL_INC) -L$(INSTALL_SHARE) \
++        -L$(STAR_SHARE) `$(INSTALL_BIN)/ams_link_adam` $(LDFLAGS) -o amsmaster
++	$(CC) $(CFLAGS) amsslave.c -I$(INSTALL_INC) -L$(INSTALL_SHARE) \
++        -L$(STAR_SHARE) `$(INSTALL_BIN)/ams_link_adam` $(LDFLAGS) -o amsslave
+ #
+ #  Remove the test program source and the include file links used to
+ #  build it.
+diff -Nur starlink-pcs-4.1_1.218.orig/ams/mk starlink-pcs-4.1_1.218/ams/mk
+--- starlink-pcs-4.1_1.218.orig/ams/mk	2000-01-18 18:11:41.000000000 +0100
++++ starlink-pcs-4.1_1.218/ams/mk	2003-11-02 02:33:26.030255648 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { $(CC) -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/atimer/makefile starlink-pcs-4.1_1.218/atimer/makefile
+--- starlink-pcs-4.1_1.218.orig/atimer/makefile	1999-04-14 13:59:35.000000000 +0200
++++ starlink-pcs-4.1_1.218/atimer/makefile	2003-11-02 02:39:54.270234200 +0100
+@@ -331,6 +331,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -1076,7 +1077,7 @@
+ #
+ #  Build the test program, ensuring that the installed version of the library
+ #  and link files are used.
+-	$(CC) $(CFLAGS) $(PKG_NAME)_test.c -L$(INSTALL_LIB) -L$(STAR_LIB) \
++	$(CC) $(CFLAGS) $(PKG_NAME)_test.c -L$(INSTALL_SHARE) -L$(STAR_SHARE) \
+               `$(INSTALL_BIN)/$(PKG_NAME)_link` \
+               -o $(PKG_NAME)_test
+ #
+diff -Nur starlink-pcs-4.1_1.218.orig/atimer/mk starlink-pcs-4.1_1.218/atimer/mk
+--- starlink-pcs-4.1_1.218.orig/atimer/mk	2000-01-18 18:11:46.000000000 +0100
++++ starlink-pcs-4.1_1.218/atimer/mk	2003-11-02 02:35:09.196571984 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { $(CC) -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/dtask/makefile starlink-pcs-4.1_1.218/dtask/makefile
+--- starlink-pcs-4.1_1.218.orig/dtask/makefile	2001-08-17 11:16:54.000000000 +0200
++++ starlink-pcs-4.1_1.218/dtask/makefile	2003-11-02 02:38:03.679046616 +0100
+@@ -379,6 +379,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -710,7 +711,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lemsf -lchr -lpsx -L../string -lstring_adam -L../subpar -lsubpar_adam -L../ams -lams_adam -L../atimer -latimer -L../misc -lmisc_adam'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+diff -Nur starlink-pcs-4.1_1.218.orig/dtask/mk starlink-pcs-4.1_1.218/dtask/mk
+--- starlink-pcs-4.1_1.218.orig/dtask/mk	2001-01-12 10:56:04.000000000 +0100
++++ starlink-pcs-4.1_1.218/dtask/mk	2003-11-02 02:36:36.084363032 +0100
+@@ -358,11 +358,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/hdspar/makefile starlink-pcs-4.1_1.218/hdspar/makefile
+--- starlink-pcs-4.1_1.218.orig/hdspar/makefile	1999-04-14 14:01:59.000000000 +0200
++++ starlink-pcs-4.1_1.218/hdspar/makefile	2003-11-02 02:43:27.407832360 +0100
+@@ -330,6 +330,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -604,7 +605,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lems -L../subpar -lsubpar_adam'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+diff -Nur starlink-pcs-4.1_1.218.orig/hdspar/mk starlink-pcs-4.1_1.218/hdspar/mk
+--- starlink-pcs-4.1_1.218.orig/hdspar/mk	2000-01-18 18:11:58.000000000 +0100
++++ starlink-pcs-4.1_1.218/hdspar/mk	2003-11-02 02:41:49.760676984 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/lex/makefile starlink-pcs-4.1_1.218/lex/makefile
+--- starlink-pcs-4.1_1.218.orig/lex/makefile	2003-04-17 11:54:06.000000000 +0200
++++ starlink-pcs-4.1_1.218/lex/makefile	2003-11-02 02:43:14.291826296 +0100
+@@ -332,6 +332,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -604,7 +605,7 @@
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+ 	$(BLD_SHR) $@ '$(OBJECT_FILES)' \
+-          '-L$(INSTALL_LIB) -L$(STAR_LIB) `./lex_link_adam`'
++          '-L$(STAR_SHARE) -lemsf'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+diff -Nur starlink-pcs-4.1_1.218.orig/lex/mk starlink-pcs-4.1_1.218/lex/mk
+--- starlink-pcs-4.1_1.218.orig/lex/mk	2000-01-18 18:12:03.000000000 +0100
++++ starlink-pcs-4.1_1.218/lex/mk	2003-11-02 02:42:38.108327024 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/messys/makefile starlink-pcs-4.1_1.218/messys/makefile
+--- starlink-pcs-4.1_1.218.orig/messys/makefile	2001-08-17 12:12:56.000000000 +0200
++++ starlink-pcs-4.1_1.218/messys/makefile	2003-11-02 02:44:48.080568240 +0100
+@@ -332,6 +332,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -608,7 +609,7 @@
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+ 	$(BLD_SHR) $@ '$(OBJECT_FILES)' \
+-          '-L$(INSTALL_LIB) -L$(STAR_LIB) `$(INSTALL_BIN)/ams_link_adam`'
++          "-L$(INSTALL_SHARE) -L$(STAR_SHARE) `$(INSTALL_BIN)/ams_link_adam`"
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+diff -Nur starlink-pcs-4.1_1.218.orig/messys/mk starlink-pcs-4.1_1.218/messys/mk
+--- starlink-pcs-4.1_1.218.orig/messys/mk	2000-01-18 18:12:12.000000000 +0100
++++ starlink-pcs-4.1_1.218/messys/mk	2003-11-02 02:44:03.793300928 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/misc/makefile starlink-pcs-4.1_1.218/misc/makefile
+--- starlink-pcs-4.1_1.218.orig/misc/makefile	1999-04-14 14:04:57.000000000 +0200
++++ starlink-pcs-4.1_1.218/misc/makefile	2003-11-02 02:46:20.848465376 +0100
+@@ -339,6 +339,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -612,7 +613,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lems -lchr -lcnf -ltinfo'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+diff -Nur starlink-pcs-4.1_1.218.orig/misc/mk starlink-pcs-4.1_1.218/misc/mk
+--- starlink-pcs-4.1_1.218.orig/misc/mk	2000-01-18 18:12:16.000000000 +0100
++++ starlink-pcs-4.1_1.218/misc/mk	2003-11-02 02:46:00.205603568 +0100
+@@ -361,11 +361,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) -I/usr/include/ncurses $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/msp/makefile starlink-pcs-4.1_1.218/msp/makefile
+--- starlink-pcs-4.1_1.218.orig/msp/makefile	2000-01-18 17:35:19.000000000 +0100
++++ starlink-pcs-4.1_1.218/msp/makefile	2003-11-02 02:50:09.596690360 +0100
+@@ -336,6 +336,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -609,7 +610,7 @@
+ 
+ lib$(PKG_NAME)$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' "-L$(STAR_LIB) -lems"
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' "-L$(STAR_SHARE) -lems -L../sock -lsock"
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+@@ -1087,10 +1088,10 @@
+ #  Build the test program, ensuring that the installed version of the library
+ #  and link files are used.
+ 	$(CC) $(CFLAGS) mspsource.c -I$(INSTALL_INC) \
+-        -L$(INSTALL_LIB) `$(INSTALL_BIN)/msp_link` $(LDFLAGS) -o mspsource
++        -L$(INSTALL_SHARE) `$(INSTALL_BIN)/msp_link` $(LDFLAGS) -o mspsource
+ 	$(CC) $(CFLAGS) mspsink.c -I$(INSTALL_INC) \
+-        -L$(INSTALL_LIB) `$(INSTALL_BIN)/msp_link` $(LDFLAGS) -o mspsink
+-	$(CC) $(CFLAGS) msptimer.c -I$(INSTALL_INC) -L$(INSTALL_LIB) \
++        -L$(INSTALL_SHARE) `$(INSTALL_BIN)/msp_link` $(LDFLAGS) -o mspsink
++	$(CC) $(CFLAGS) msptimer.c -I$(INSTALL_INC) -L$(INSTALL_SHARE) \
+         `$(INSTALL_BIN)/msp_link` `$(INSTALL_BIN)/atimer_link` $(LDFLAGS) \
+         -o msptimer
+ #
+diff -Nur starlink-pcs-4.1_1.218.orig/msp/mk starlink-pcs-4.1_1.218/msp/mk
+--- starlink-pcs-4.1_1.218.orig/msp/mk	2000-01-18 18:12:23.000000000 +0100
++++ starlink-pcs-4.1_1.218/msp/mk	2003-11-02 02:46:49.874052816 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { $(CC) -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/parsecon/makefile starlink-pcs-4.1_1.218/parsecon/makefile
+--- starlink-pcs-4.1_1.218.orig/parsecon/makefile	1999-05-28 12:21:51.000000000 +0200
++++ starlink-pcs-4.1_1.218/parsecon/makefile	2003-11-02 02:49:48.663872632 +0100
+@@ -351,6 +351,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -736,7 +737,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lemsf -lchr -L../string -lstring_adam'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+@@ -1752,13 +1753,11 @@
+ compifl : SAE_PAR
+ 
+ compifl : $(OBJECT_LIBRARIES) $(SHAREABLE_LIBRARIES) $(EXTERNAL_LIBS)
+-	mv lib$(PKG_NAME)_adam$(SHARE) tmp_share;
+ 	PATH=$(PCSSRC_DIR)/string:$(PATH);export PATH;\
+           $(FC) $(FFLAGS) $(LDFLAGS) -o compifl compifl.f \
+             $(LDFLAG1) -L. $(ADDLIBS) \
+-            -L$(INSTALL_LIB) -L$(STAR_LIB) \
++            -L$(INSTALL_SHARE) -L$(STAR_SHARE) \
+             -lsubpar_adam `./parsecon_link_adam` $(LDFLAG2)
+-	mv tmp_share lib$(PKG_NAME)_adam$(SHARE)
+ 
+ #-------------------------------------------------------------------------------
+ #
+diff -Nur starlink-pcs-4.1_1.218.orig/parsecon/mk starlink-pcs-4.1_1.218/parsecon/mk
+--- starlink-pcs-4.1_1.218.orig/parsecon/mk	2000-01-18 18:12:29.000000000 +0100
++++ starlink-pcs-4.1_1.218/parsecon/mk	2003-11-02 02:48:02.697981896 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/sock/makefile starlink-pcs-4.1_1.218/sock/makefile
+--- starlink-pcs-4.1_1.218.orig/sock/makefile	1999-04-14 14:08:31.000000000 +0200
++++ starlink-pcs-4.1_1.218/sock/makefile	2003-11-02 02:51:34.333808360 +0100
+@@ -329,6 +329,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+diff -Nur starlink-pcs-4.1_1.218.orig/sock/mk starlink-pcs-4.1_1.218/sock/mk
+--- starlink-pcs-4.1_1.218.orig/sock/mk	2000-01-18 18:12:40.000000000 +0100
++++ starlink-pcs-4.1_1.218/sock/mk	2003-11-02 02:51:01.543793200 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { $(CC) -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/string/makefile starlink-pcs-4.1_1.218/string/makefile
+--- starlink-pcs-4.1_1.218.orig/string/makefile	1999-04-14 14:09:11.000000000 +0200
++++ starlink-pcs-4.1_1.218/string/makefile	2003-11-02 02:52:32.024038112 +0100
+@@ -330,6 +330,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -604,7 +605,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lemsf -lchr'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+@@ -1079,7 +1080,7 @@
+ #
+ #  Build the test program, ensuring that the installed version of the library
+ #  and link files are used.
+-	$(FC) $(FFLAGS) $(PKG_NAME)_test.f -L$(INSTALL_LIB) -L$(STAR_LIB) \
++	$(FC) $(FFLAGS) $(PKG_NAME)_test.f -L$(INSTALL_SHARE) -L$(STAR_SHARE) \
+               `$(INSTALL_BIN)/$(PKG_NAME)_link_adam` \
+               -o $(PKG_NAME)_test
+ #
+diff -Nur starlink-pcs-4.1_1.218.orig/string/mk starlink-pcs-4.1_1.218/string/mk
+--- starlink-pcs-4.1_1.218.orig/string/mk	2000-01-18 18:12:49.000000000 +0100
++++ starlink-pcs-4.1_1.218/string/mk	2003-11-02 02:52:00.243869432 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/subpar/makefile starlink-pcs-4.1_1.218/subpar/makefile
+--- starlink-pcs-4.1_1.218.orig/subpar/makefile	2003-01-06 11:16:33.000000000 +0100
++++ starlink-pcs-4.1_1.218/subpar/makefile	2003-11-02 02:53:20.988594368 +0100
+@@ -391,6 +391,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -866,7 +867,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lemsf -lchr -lcnf -lpsx -lhlp -lhds -L../lex -llex_adam -L../string -lstring_adam -L../parsecon -lparsecon_adam -L../misc -lmisc_adam -L../ams -lams_adam'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+diff -Nur starlink-pcs-4.1_1.218.orig/subpar/mk starlink-pcs-4.1_1.218/subpar/mk
+--- starlink-pcs-4.1_1.218.orig/subpar/mk	2000-01-18 18:12:53.000000000 +0100
++++ starlink-pcs-4.1_1.218/subpar/mk	2003-11-02 02:53:00.416721768 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+diff -Nur starlink-pcs-4.1_1.218.orig/task/makefile starlink-pcs-4.1_1.218/task/makefile
+--- starlink-pcs-4.1_1.218.orig/task/makefile	2001-08-17 11:28:14.000000000 +0200
++++ starlink-pcs-4.1_1.218/task/makefile	2003-11-02 02:54:06.080739320 +0100
+@@ -353,6 +353,7 @@
+ STAR_HELP = $(STARLINK)/help
+ STAR_INC = $(STARLINK)/include
+ STAR_LIB = $(STARLINK)/lib
++STAR_SHARE = $(STARLINK)/share
+ 
+ #  Pathname of the root directory beneath which the built files for
+ #  this package should be installed for use.  This defaults to the
+@@ -728,7 +729,7 @@
+ 
+ lib$(PKG_NAME)_adam$(SHARE): $(OBJECT_FILES)
+ 	touch $@
+-	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_LIB) -lems'
++	$(BLD_SHR) $@ '$(OBJECT_FILES)' '-L$(STAR_SHARE) -lemsf -lchr -L../ams -lams_adam -L../subpar -lsubpar_adam -L../string -lstring_adam -L../dtask -ldtask_adam'
+ 
+ #  Name of the date stamp file.  This is used to record the time of the
+ #  most recent build for use in subsequent operations that require it.
+diff -Nur starlink-pcs-4.1_1.218.orig/task/mk starlink-pcs-4.1_1.218/task/mk
+--- starlink-pcs-4.1_1.218.orig/task/mk	2000-01-18 18:13:20.000000000 +0100
++++ starlink-pcs-4.1_1.218/task/mk	2003-11-02 02:53:48.302442032 +0100
+@@ -355,11 +355,11 @@
+ #  ----------------------
+             ix86_Linux)
+                AR_IN='ar r'
+-               BLD_SHR='f() { ld -shared -soname $$1 -o $$1 $$2;}; f'
++               BLD_SHR='f() { g77 -shared -Wl,-soname=$$1 $$3 -o $$1 $$2;}; f'
+                CC='gcc'
+-               CFLAGS='-I$(STAR_INC) -O -fPIC'
++               CFLAGS='-I$(STAR_INC) $(OPT) -fPIC'
+                FC='g77'
+-               FFLAGS='-fno-second-underscore -O -fPIC'
++               FFLAGS='-fno-second-underscore $(OPT) -fPIC'
+                LINK='ln -fs'
+                RANLIB='ranlib'
+                SHARE='.so'
+--- starlink-pcs-4.1_1.218.orig/makefile	2003-07-17 10:58:20.000000000 +0200
++++ starlink-pcs-4.1_1.218/makefile	2003-11-02 03:37:22.153076336 +0100
+@@ -553,11 +553,14 @@
+ 	cd messys; ./mk build
+ 	cd adam; ./mk build
+ 	cd misc; ./mk build
+-	cd subpar; ./mk build
+-	cd parsecon; ./mk build
+-	cd hdspar; ./mk build
+-	cd dtask; ./mk build
++	cd subpar; ./mk subpar_par
++	cd parsecon; ./mk libparsecon_adam.so libparsecon_adam.a
++	cd dtask; ./mk dtask_err.h
+ 	cd ams; ./mk build
++	cd subpar; ./mk build
++	cd parsecon; ./mk build
++	cd hdspar; ./mk build
++	cd dtask; ./mk build
+ 	cd task; ./mk build
+ #	cd adamnet; ./mk build
+ 	@ if test -f .INSTALLED_$(SYSTEM); then \
