@@ -47,7 +47,7 @@ Starlink.
 Summary:	Header files for PCS libraries
 Summary(pl):	Pliki nag³ówkowe bibliotek PCS
 Group:		Development/Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 Requires:	starlink-hds-devel
 Requires:	starlink-hlp-devel
 Requires:	starlink-psx-devel
@@ -62,7 +62,7 @@ Pliki nag³ówkowe bibliotek PCS.
 Summary:	Static Starlink PCS libraries
 Summary(pl):	Statyczne biblioteki Starlink PCS
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}
+Requires:	%{name}-devel = %{version}-%{release}
 
 %description static
 Static Starlink PCS libraries.
