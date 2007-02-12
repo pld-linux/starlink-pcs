@@ -1,5 +1,5 @@
 Summary:	PCS - Parameter and Communications Subsystems
-Summary(pl):	PCS - podsystemy parametrów i komunikacji
+Summary(pl.UTF-8):   PCS - podsystemy parametrÃ³w i komunikacji
 Name:		starlink-pcs
 Version:	4.1_1.218
 Release:	2
@@ -31,21 +31,21 @@ for many Starlink applications and the associated user-interfaces.
 The PCS libraries will not generally be called directly by application
 programs, but form a basic part of the Starlink Software Environment.
 
-%description -l pl
-Aplikacje zwykle potrzebuj± uzyskaæ warto¶ci parametrów z ró¿nych
-¼róde³ oraz komunikowaæ siê z innymi programami. PCS (Parameter and
-Communication Subsystems - podsystemy parametrów i komunikacji) to
-zbiór blisko zwi±zanych bibliotek funkcji dostarczaj±cych te
-mo¿liwo¶ci dla wielu aplikacji Starlinka i zwi±zanych interfejsów
-u¿ytkownika.
+%description -l pl.UTF-8
+Aplikacje zwykle potrzebujÄ… uzyskaÄ‡ wartoÅ›ci parametrÃ³w z rÃ³Å¼nych
+ÅºrÃ³deÅ‚ oraz komunikowaÄ‡ siÄ™ z innymi programami. PCS (Parameter and
+Communication Subsystems - podsystemy parametrÃ³w i komunikacji) to
+zbiÃ³r blisko zwiÄ…zanych bibliotek funkcji dostarczajÄ…cych te
+moÅ¼liwoÅ›ci dla wielu aplikacji Starlinka i zwiÄ…zanych interfejsÃ³w
+uÅ¼ytkownika.
 
-Biblioteki PCS w ogólno¶ci nie s± wywo³ywane bezpo¶rednio przez
-aplikacjê, ale tworz± podstawow± czê¶æ ¶rodowiska programistycznego
+Biblioteki PCS w ogÃ³lnoÅ›ci nie sÄ… wywoÅ‚ywane bezpoÅ›rednio przez
+aplikacjÄ™, ale tworzÄ… podstawowÄ… czÄ™Å›Ä‡ Å›rodowiska programistycznego
 Starlink.
 
 %package devel
 Summary:	Header files for PCS libraries
-Summary(pl):	Pliki nag³ówkowe bibliotek PCS
+Summary(pl.UTF-8):   Pliki nagÅ‚Ã³wkowe bibliotek PCS
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	starlink-hds-devel
@@ -55,19 +55,19 @@ Requires:	starlink-psx-devel
 %description devel
 Header files for PCS libraries.
 
-%description devel -l pl
-Pliki nag³ówkowe bibliotek PCS.
+%description devel -l pl.UTF-8
+Pliki nagÅ‚Ã³wkowe bibliotek PCS.
 
 %package static
 Summary:	Static Starlink PCS libraries
-Summary(pl):	Statyczne biblioteki Starlink PCS
+Summary(pl.UTF-8):   Statyczne biblioteki Starlink PCS
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
 %description static
 Static Starlink PCS libraries.
 
-%description static -l pl
+%description static -l pl.UTF-8
 Statyczne biblioteki Starlink PCS.
 
 %prep
