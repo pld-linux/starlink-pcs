@@ -1,5 +1,5 @@
 Summary:	PCS - Parameter and Communications Subsystems
-Summary(pl.UTF-8):   PCS - podsystemy parametrów i komunikacji
+Summary(pl.UTF-8):	PCS - podsystemy parametrów i komunikacji
 Name:		starlink-pcs
 Version:	4.1_1.218
 Release:	2
@@ -45,7 +45,7 @@ Starlink.
 
 %package devel
 Summary:	Header files for PCS libraries
-Summary(pl.UTF-8):   Pliki nagłówkowe bibliotek PCS
+Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek PCS
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	starlink-hds-devel
@@ -60,7 +60,7 @@ Pliki nagłówkowe bibliotek PCS.
 
 %package static
 Summary:	Static Starlink PCS libraries
-Summary(pl.UTF-8):   Statyczne biblioteki Starlink PCS
+Summary(pl.UTF-8):	Statyczne biblioteki Starlink PCS
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
